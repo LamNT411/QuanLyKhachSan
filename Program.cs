@@ -13,7 +13,7 @@ namespace QuanLyKhachSan
 
             //Application.Run(new FrmKhach());
             //Application.Run(new FrmPhong());
-            Application.Run(new FrmDatPhong());
+            //Application.Run(new FrmDatPhong());
             Application.Run(new FrmMain());
         }
     }

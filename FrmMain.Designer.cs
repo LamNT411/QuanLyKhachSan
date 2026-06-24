@@ -21,6 +21,7 @@ namespace QuanLyKhachSan
         {
             this.btnInHoaDon = new System.Windows.Forms.Button();
             this.SuspendLayout();
+            this.btnInHoaDon.Click += new System.EventHandler(this.btnInHoaDon_Click);
 
             this.btnInHoaDon.Location = new System.Drawing.Point(20, 20);
             this.btnInHoaDon.Name = "btnInHoaDon";
