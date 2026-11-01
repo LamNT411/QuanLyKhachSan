@@ -1,99 +1,170 @@
+
 using System;
-using Microsoft.Data.SqlClient;
 using System.Windows.Forms;
+using Microsoft.Data.SqlClient;
 using QuanLyKhachSan.Database;
+using QuanLyKhachSan.Reports;
 
+namespace QuanLyKhachSan;
 
-namespace QuanLyKhachSan.Forms
+public class FrmDatPhong : Form
 {
-    public class FrmDatPhong : Form
+    TextBox txtCMND = new();
+    TextBox txtPhong = new();
+    TextBox txtMaNV = new();
+
+    DateTimePicker dtNhan = new();
+    DateTimePicker dtTra = new();
+
+    Button btnDat = new();
+    Button btnHoaDon = new();
+
+    public FrmDatPhong()
     {
+        CreateForm();
+    }
 
-        TextBox txtCMND = new();
-        TextBox txtPhong = new();
-        TextBox txtMaNV = new();
+    void CreateForm()
+    {
+        Text = "QUẢN LÝ ĐẶT PHÒNG";
+        Width = 500;
+        Height = 450;
+        StartPosition = FormStartPosition.CenterScreen;
 
-        DateTimePicker dtNhan = new();
-        DateTimePicker dtTra = new();
-
-        Button btnDat = new();
-
-
-        public FrmDatPhong()
+        Label lblCMND = new()
         {
-            Text = "Đặt phòng";
+            Text = "CMND khách hàng:",
+            Left = 30,
+            Top = 40,
+            Width = 130
+        };
 
-            Width = 400;
-            Height = 400;
+        txtCMND.SetBounds(180, 40, 200, 25);
 
-
-            btnDat.Text = "Đặt phòng";
-
-            btnDat.Click += btnDat_Click;
-
-
-            Controls.Add(txtCMND);
-            Controls.Add(txtPhong);
-            Controls.Add(txtMaNV);
-            Controls.Add(dtNhan);
-            Controls.Add(dtTra);
-            Controls.Add(btnDat);
-
-
-            txtCMND.Top = 20;
-            txtPhong.Top = 60;
-            txtMaNV.Top = 100;
-
-            dtNhan.Top = 140;
-            dtTra.Top = 180;
-
-            btnDat.Top = 230;
-        }
-
-
-
-        private void btnDat_Click(object sender, EventArgs e)
+        Label lblPhong = new()
         {
+            Text = "Số phòng:",
+            Left = 30,
+            Top = 90,
+            Width = 130
+        };
 
+        txtPhong.SetBounds(180, 90, 200, 25);
+
+        Label lblMaNV = new()
+        {
+            Text = "Mã nhân viên:",
+            Left = 30,
+            Top = 140,
+            Width = 130
+        };
+
+        txtMaNV.SetBounds(180, 140, 200, 25);
+
+        Label lblNhan = new()
+        {
+            Text = "Ngày nhận:",
+            Left = 30,
+            Top = 190,
+            Width = 130
+        };
+
+        dtNhan.SetBounds(180, 190, 200, 25);
+
+        Label lblTra = new()
+        {
+            Text = "Ngày trả:",
+            Left = 30,
+            Top = 240,
+            Width = 130
+        };
+
+        dtTra.SetBounds(180, 240, 200, 25);
+
+        btnDat.Text = "ĐẶT PHÒNG";
+        btnDat.SetBounds(70, 310, 140, 40);
+        btnDat.Click += btnDat_Click;
+
+        btnHoaDon.Text = "XUẤT HÓA ĐƠN PDF";
+        btnHoaDon.SetBounds(240, 310, 180, 40);
+        btnHoaDon.Click += btnHoaDon_Click;
+
+        Controls.AddRange(new Control[]
+        {
+            lblCMND, txtCMND,
+            lblPhong, txtPhong,
+            lblMaNV, txtMaNV,
+            lblNhan, dtNhan,
+            lblTra, dtTra,
+            btnDat, btnHoaDon
+        });
+    }
+
+    // Đặt phòng
+    private void btnDat_Click(object? sender, EventArgs e)
+    {
+        try
+        {
             using SqlConnection conn = DB.GetConnection();
-
             conn.Open();
 
-
-            SqlCommand cmd =
-            new SqlCommand("sp_DatPhong", conn);
-
+            using SqlCommand cmd =
+                new("sp_DatPhong", conn);
 
             cmd.CommandType =
-            System.Data.CommandType.StoredProcedure;
-
+                System.Data.CommandType.StoredProcedure;
 
             cmd.Parameters.AddWithValue("@CMND", txtCMND.Text);
-
             cmd.Parameters.AddWithValue("@SoPhong", txtPhong.Text);
-
             cmd.Parameters.AddWithValue("@MaNV", txtMaNV.Text);
-
-
-            cmd.Parameters.AddWithValue("@NgayDK",
-                DateTime.Now);
-
-
-            cmd.Parameters.AddWithValue("@NgayNhan",
-                dtNhan.Value);
-
-
-            cmd.Parameters.AddWithValue("@NgayTra",
-                dtTra.Value);
-
-
+            cmd.Parameters.AddWithValue("@NgayDK", DateTime.Now);
+            cmd.Parameters.AddWithValue("@NgayNhan", dtNhan.Value);
+            cmd.Parameters.AddWithValue("@NgayTra", dtTra.Value);
 
             cmd.ExecuteNonQuery();
 
+            MessageBox.Show("Đặt phòng thành công!");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Lỗi đặt phòng");
+        }
+    }
+
+    // Xuất PDF
+    private void btnHoaDon_Click(object? sender, EventArgs e)
+    {
+        try
+        {
+            MessageBox.Show("Đang tạo hóa đơn...");
+
+            string file = HoaDonPDF.TaoHoaDon(
+                txtCMND.Text.Trim(),
+                txtPhong.Text.Trim(),
+                dtNhan.Value.Date,
+                dtTra.Value.Date
+            );
 
             MessageBox.Show(
-            "Đặt phòng thành công");
+                "XUẤT PDF THÀNH CÔNG!\n\n" + file
+            );
 
+            System.Diagnostics.Process.Start(
+                new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = file,
+                    UseShellExecute = true
+                }
+            );
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                ex.ToString(),
+                "LỖI XUẤT PDF"
+            );
         }
     }
 }
+
+

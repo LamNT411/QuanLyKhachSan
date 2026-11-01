@@ -13,7 +13,7 @@ namespace QuanLyKhachSan.Forms
         public FrmPhong()
         {
             Text = "Quản lý phòng";
-            ////////////Width = 800;
+            Width = 800;
             Height = 500;
 
             dgvPhong.Dock = DockStyle.Fill;
@@ -24,7 +24,7 @@ namespace QuanLyKhachSan.Forms
         }
 
 
-        private void FrmPhong_Load(object sender, EventArgs e)
+        private void FrmPhong_Load(object? sender, EventArgs e)
         {
             LoadPhong();
         }

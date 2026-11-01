@@ -9,15 +9,12 @@ namespace QuanLyKhachSan.Forms
 {
     public class FrmKhach : Form
     {
-        TextBox txtCMND;
-        TextBox txtHoTen;
-        TextBox txtSDT;
-        TextBox txtDiaChi;
-
-        DateTimePicker dtNgaySinh;
-
-        Button btnThem;
-
+        TextBox txtCMND = new();
+        TextBox txtHoTen = new();
+        TextBox txtSDT = new();
+        TextBox txtDiaChi = new();
+        DateTimePicker dtNgaySinh = new();
+        Button btnThem = new();
 
         public FrmKhach()
         {
@@ -116,7 +113,7 @@ namespace QuanLyKhachSan.Forms
 
 
         private void btnThem_Click(
-            object sender,
+            object? sender,
             EventArgs e)
         {
             using (SqlConnection conn = DB.GetConnection())
